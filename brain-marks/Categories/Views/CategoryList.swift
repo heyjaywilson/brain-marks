@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import os.log
 
 enum CategoryState {
     case edit
@@ -13,7 +14,7 @@ enum CategoryState {
 }
 
 struct CategoryList: View {
-    
+    @Binding var activeTab: Int
     @State private var categorySheetState: CategoryState = .new
     @State private var editCategory: AWSCategory?
     @State private var indexSetToDelete: IndexSet?
@@ -40,6 +41,7 @@ struct CategoryList: View {
                         }
                         .sheet(isPresented: $showingCategorySheet) {
                             CategorySheetView(
+                                activeTab: $activeTab, 
                                 editCategory: $editCategory,
                                 categorySheetState: $categorySheetState, parentVM: viewModel)
                                 .onDisappear {
@@ -53,7 +55,7 @@ struct CategoryList: View {
                                 case .success(let newEditCategory):
                                     editCategory = newEditCategory
                                 case .failure(let error):
-                                    print("❌ Error setting editCategory: \(error)")
+                                    Logger.dataStore.error("❌ Error setting editCategory: \(error)")
                                 }
                             }
                         }
@@ -94,6 +96,19 @@ struct CategoryList: View {
             viewModel.getCategories()
         }
         .accentColor(Color(UIColor.label))
+        .onOpenURL { url in
+          guard let action = url.host else {
+            return
+          }
+          switch action {
+          case "addCategory":
+            showingCategorySheet = true
+          case "addTweet":
+            showAddURLView = true
+          default:
+            return
+          }
+        }
     }
     
     @ViewBuilder
@@ -174,6 +189,6 @@ struct CategoryList: View {
 
 struct CategoryList_Previews: PreviewProvider {
     static var previews: some View {
-        CategoryList()
+        CategoryList(activeTab: .constant(0))
     }
 }
