@@ -1,6 +1,6 @@
 // swiftlint:disable line_length
 // swiftlint:disable file_length
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length 
 //
 //  SFSymbols.swift
 //  brain-marks
